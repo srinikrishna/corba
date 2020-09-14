@@ -120,4 +120,4 @@ hs_err_pid*
 
 .tool-versions
 train_in5020.zip
-train_in5020/
+train_in5020/.DS_Store
