@@ -48,7 +48,7 @@ public class ProfileServant extends ProfilerPOA {
 
     @Override
     public int getTimesOrderedByUser(String user_id, String restaurant_id) {
-        
+
         return 0;
     }
 
