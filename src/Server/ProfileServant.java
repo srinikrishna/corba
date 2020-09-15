@@ -1,8 +1,6 @@
 package Server;
 
-import ProfileService.FoodTypeCounter;
-import ProfileService.ProfilerPOA;
-import ProfileService.UserCounter;
+import ProfileService.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -60,5 +58,15 @@ public class ProfileServant extends ProfilerPOA {
     @Override
     public FoodTypeCounter[] getTopThreeFoodTypesByZone(String zone_id) {
         return new FoodTypeCounter[0];
+    }
+
+    @Override
+    public UserProfile getUserProfile(String user_id) {
+        return null;
+    }
+
+    @Override
+    public RestaurantProfile getRestaurantProfile(String restaurant_id) {
+        return null;
     }
 }

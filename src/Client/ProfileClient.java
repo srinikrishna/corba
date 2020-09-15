@@ -19,7 +19,7 @@ public class ProfileClient {
 
         try {
             /* Get the root naming context*/
-            org.omg.CORBA.Object objectRef = null;
+            org.omg.CORBA.Object objectRef;
             objectRef = orb.resolve_initial_references("NameService");
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objectRef);
 
@@ -27,11 +27,15 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            int count = clientRef.getTimesOrdered("SOAAADD12AB018A9DD");
-            TimeUnit.MILLISECONDS.sleep(100);
-            System.out.println("SOAAADD12AB018A9DD" + " " + count);
+            //int count = clientRef.getTimesOrdered("SOAAADD12AB018A9DD");
+            //TimeUnit.MILLISECONDS.sleep(100);
+            //System.out.println("SOAAADD12AB018A9DD" + " " + count);
 
-        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound | InterruptedException e) {
+            InputParser inputParser = new InputParser();
+
+            inputParser.readInput("testfiles/test_input.txt");
+
+        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e) {
             e.printStackTrace();
         }
     }
