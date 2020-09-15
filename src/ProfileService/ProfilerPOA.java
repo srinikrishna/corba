@@ -8,7 +8,6 @@ package ProfileService;
 * tirsdag 15. september 2020 10.08.36 sentraleuropeisk sommertid
 */
 
-
 /* The service interface with the methods that can be invoked remotely by clients */
 public abstract class ProfilerPOA extends org.omg.PortableServer.Servant
  implements ProfileService.ProfilerOperations, org.omg.CORBA.portable.InvokeHandler

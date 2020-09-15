@@ -1,5 +1,6 @@
 package ProfileService;
 
+import org.omg.CORBA.*;
 
 /**
 * ProfileService/TopThreeUsersHelper.java .
