@@ -7,7 +7,7 @@ module ProfileService
         string user_id;
         long restaurant_timesOrdered;
     };
-
+    
      /* FoodTypeCounter struct in order to make list of TopThreeFoodTypes*/
     struct FoodTypeCounter
     {
