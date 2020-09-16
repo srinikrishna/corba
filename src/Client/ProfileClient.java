@@ -16,7 +16,6 @@ public class ProfileClient {
 
         /* Create and initialize CORBA ORB*/
         ORB orb = ORB.init(args, null);
-
         try {
             /* Get the root naming context*/
             org.omg.CORBA.Object objectRef;

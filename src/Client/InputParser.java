@@ -53,13 +53,13 @@ public class InputParser {
 
             switch (strArray[0]){
                 case "getTimesOrderedByUser":
-                    break;
+                    clientRef.getTimesOrderedByUser(strArray[1], strArray[2]);
                 case "getTimesOrdered":
-                    break;
+                    clientRef.getTimesOrdered(strArray[1]);
                 case "getTopThreeUsersByRestaurant":
-                    break;
+                    clientRef.getTopThreeUsersByRestaurant(strArray[1]);
                 case "getTopThreeFoodTypesByZone":
-                    break;
+                    clientRef.getTopThreeFoodTypesByZone(strArray[1]);
                 default:
                     break;
             }
