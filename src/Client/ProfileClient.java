@@ -26,15 +26,16 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            //int count = clientRef.getTimesOrdered("SOAAADD12AB018A9DD");
-            //TimeUnit.MILLISECONDS.sleep(100);
-            //System.out.println("SOAAADD12AB018A9DD" + " " + count);
+            int count = clientRef.getTimesOrderedByUser("8cf21d682f872dbe91296690359af2010e5195ca","SOAAADD12AB018A9DD");
+            TimeUnit.MILLISECONDS.sleep(100);
+            System.out.println("SOAAADD12AB018A9DD" + " " + count);
 
-            InputParser inputParser = new InputParser();
+            //InputParser inputParser = new InputParser();
 
-            inputParser.readInput("testfiles/test_input.txt");
+            //inputParser.readInput("testfiles/test_input.txt");
 
-        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e) {
+        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName
+                | NotFound | InterruptedException e) {
             e.printStackTrace();
         }
     }

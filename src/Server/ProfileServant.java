@@ -22,7 +22,7 @@ public class ProfileServant extends ProfilerPOA {
                 if (!line.contains(restaurant_id)) continue;
                 count += Integer.parseInt(line.split("( |\t)+")[3]);
             }
-            // note that Scanner suppresses exceptions
+
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
@@ -46,8 +46,39 @@ public class ProfileServant extends ProfilerPOA {
 
     @Override
     public int getTimesOrderedByUser(String user_id, String restaurant_id) {
+        String path = "testfiles/test_ordering_profile.txt";
 
-        return 0;
+        FileInputStream inputStream = null;
+        Scanner sc = null;
+        int count = 0;
+        try {
+            inputStream = new FileInputStream(path);
+            sc = new Scanner(inputStream, "UTF-8");
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                if (!line.contains(restaurant_id) || !line.contains(user_id)) continue;
+                count += Integer.parseInt(line.split("( |\t)+")[3]);
+            }
+
+            if (sc.ioException() != null) {
+                throw sc.ioException();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (sc != null) {
+                sc.close();
+            }
+        }
+
+        return count;
     }
 
     @Override
