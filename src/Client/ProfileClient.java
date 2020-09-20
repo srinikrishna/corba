@@ -1,5 +1,6 @@
 package Client;
 
+import ProfileService.FoodTypeCounter;
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
 import org.omg.CORBA.ORB;
@@ -8,8 +9,6 @@ import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
-
-import java.util.concurrent.TimeUnit;
 
 public class ProfileClient {
     public static void main(String[] args) {
@@ -26,15 +25,12 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            //int count = clientRef.getTimesOrdered("SOAAADD12AB018A9DD");
-            //TimeUnit.MILLISECONDS.sleep(100);
-            //System.out.println("SOAAADD12AB018A9DD" + " " + count);
+            FileHandler fh = new FileHandler();
 
-            InputParser inputParser = new InputParser();
+            fh.runClientQueries("test_input.txt", clientRef);
 
-            inputParser.readInput("testfiles/test_input.txt");
-
-        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e) {
+        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName
+                | NotFound e) {
             e.printStackTrace();
         }
     }
