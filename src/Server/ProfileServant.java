@@ -1,14 +1,19 @@
 package Server;
 
 import ProfileService.*;
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class ProfileServant extends ProfilerPOA {
+    private int RESTAURANT_ID_POS = 0;
+    private int FOOD_TYPE_ID_POS = 1;
+    private int USER_ID_POS = 2;
+    private int TIMES_ORDERED_POS = 3;
+
     @Override
     public int getTimesOrdered(String restaurant_id) {
         String path = "testfiles/test_ordering_profile.txt";
@@ -22,7 +27,7 @@ public class ProfileServant extends ProfilerPOA {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if (!line.contains(restaurant_id)) continue;
-                count += Integer.parseInt(line.split("( |\t)+")[3]);
+                count += Integer.parseInt(line.split("( |\t)+")[TIMES_ORDERED_POS]);
             }
 
             if (sc.ioException() != null) {
@@ -59,7 +64,7 @@ public class ProfileServant extends ProfilerPOA {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if (!line.contains(restaurant_id) || !line.contains(user_id)) continue;
-                count += Integer.parseInt(line.split("( |\t)+")[3]);
+                count += Integer.parseInt(line.split("( |\t)+")[TIMES_ORDERED_POS]);
             }
 
             if (sc.ioException() != null) {
@@ -89,22 +94,28 @@ public class ProfileServant extends ProfilerPOA {
 
         FileInputStream inputStream = null;
         Scanner sc = null;
-
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        int lowestCount = 0;
+        ArrayList<UserCounter> userCounterArrayList = new ArrayList<>();
         try {
             inputStream = new FileInputStream(path);
             sc = new Scanner(inputStream, "UTF-8");
+
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if (!line.contains(restaurant_id)) continue;
                 String[] rows = line.split("( |\t)+");
-                int currentCount = Integer.parseInt(rows[3]);
-                if (currentCount > lowestCount) {
-                    map.put(rows[2], currentCount);
-                    currentCount = lowestCount;
-                }
+                String user_id = rows[USER_ID_POS];
 
+                boolean found = false;
+                for (UserCounter us: userCounterArrayList) {
+                    if (us.user_id.equals(user_id)) {
+                        us.restaurant_timesOrdered += Integer.parseInt(rows[TIMES_ORDERED_POS]);
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    userCounterArrayList.add(new UserCounter(user_id, Integer.parseInt(rows[TIMES_ORDERED_POS])));
+                }
             }
 
             if (sc.ioException() != null) {
@@ -124,7 +135,11 @@ public class ProfileServant extends ProfilerPOA {
                 sc.close();
             }
         }
-        return new UserCounter[0];
+
+        userCounterArrayList.sort(Comparator.comparingInt(o -> o.restaurant_timesOrdered));
+        return userCounterArrayList.
+                subList((userCounterArrayList.size() - 3), userCounterArrayList.size()).toArray(new UserCounter[0]);
+
     }
 
     @Override

@@ -2,6 +2,7 @@ package Client;
 
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
+import ProfileService.UserCounter;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextExt;
@@ -26,9 +27,17 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            int count = clientRef.getTimesOrderedByUser("8cf21d682f872dbe91296690359af2010e5195ca","SOAAADD12AB018A9DD");
+            String restaurant_id = "SOAAADD12AB018A9DD";
+            UserCounter[] userCounters = clientRef.getTopThreeUsersByRestaurant(restaurant_id);
+
             TimeUnit.MILLISECONDS.sleep(100);
-            System.out.println("SOAAADD12AB018A9DD" + " " + count);
+
+            for (UserCounter us : userCounters) {
+                System.out.println("Res: "+ restaurant_id + " User id: " + us.user_id + " Count: "
+                        + us.restaurant_timesOrdered);
+
+            }
+
 
             //InputParser inputParser = new InputParser();
 
