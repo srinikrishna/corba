@@ -41,7 +41,7 @@ public class ProfileServant extends ProfilerPOA {
 
             // Init popular users section
             //while (sc.hasNextLine() )
-
+            int minUserOrders = 0;
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] rows = line.split("( |\t)+");
@@ -61,6 +61,7 @@ public class ProfileServant extends ProfilerPOA {
                             break;
                         }
                     }
+
                     if (!found) {
                         RestaurantCounter[] newRc = new RestaurantCounter[user.restaurants.length + 1];
                         for(int i = 0; i < user.restaurants.length; i++) {
@@ -70,13 +71,23 @@ public class ProfileServant extends ProfilerPOA {
                         newRc[user.restaurants.length] = new RestaurantCounter(restaurant_id, timesOrdered);
                         user.restaurants = newRc;
                     }
-                    
+
                 } else if (popularUsers.size() <= 1000 && !popularUsers.containsKey(user_id)) {
                     RestaurantCounter rc = new RestaurantCounter(restaurant_id, timesOrdered);
                     UserProfile user = new UserProfile(user_id, new RestaurantCounter[]{rc});
                     popularUsers.put(user_id, new UserProfile(user_id, new RestaurantCounter[]{rc}));
+                } else if (timesOrdered > minUserOrders) {
+                    // some code to change the lowest user
                 }
 
+                for (UserProfile user : popularUsers.values()) {
+                    int currentUserTimesOrdered = 0;
+                    for (RestaurantCounter rc : user.restaurants) {
+                        currentUserTimesOrdered += rc.restaurant_timesOrdered;
+                    }
+
+                    if (currentUserTimesOrdered < minUserOrders) minUserOrders = currentUserTimesOrdered;
+                }
             }
 
             if (sc.ioException() != null) {
