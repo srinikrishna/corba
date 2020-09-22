@@ -6,6 +6,7 @@ import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +18,9 @@ public class ProfileServant extends ProfilerPOA {
 
     private int ZONE_POS = 1;
 
+    private String orderingPath = "train_in5020/restaurant_ordering_profile.txt";
+    private String zonesPath = "train_in5020/restaurant_location_directory.txt";
+
     @Override
     public int getTimesOrdered(String restaurant_id) {
         String path = "testfiles/test_ordering_profile.txt";
@@ -25,7 +29,9 @@ public class ProfileServant extends ProfilerPOA {
         Scanner sc = null;
         int count = 0;
         try {
-            inputStream = new FileInputStream(path);
+            TimeUnit.MILLISECONDS.sleep(80);
+
+            inputStream = new FileInputStream(orderingPath);
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
@@ -36,7 +42,7 @@ public class ProfileServant extends ProfilerPOA {
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             if (inputStream != null) {
@@ -56,13 +62,14 @@ public class ProfileServant extends ProfilerPOA {
 
     @Override
     public int getTimesOrderedByUser(String user_id, String restaurant_id) {
-        String path = "testfiles/test_ordering_profile.txt";
 
         FileInputStream inputStream = null;
         Scanner sc = null;
         int count = 0;
         try {
-            inputStream = new FileInputStream(path);
+            TimeUnit.MILLISECONDS.sleep(80);
+
+            inputStream = new FileInputStream(orderingPath);
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
@@ -73,7 +80,7 @@ public class ProfileServant extends ProfilerPOA {
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             if (inputStream != null) {
@@ -93,13 +100,14 @@ public class ProfileServant extends ProfilerPOA {
 
     @Override
     public UserCounter[] getTopThreeUsersByRestaurant(String restaurant_id) {
-        String path = "testfiles/test_ordering_profile.txt";
 
         FileInputStream inputStream = null;
         Scanner sc = null;
         Map<String, Integer> userCounterMap = new HashMap<>();
         try {
-            inputStream = new FileInputStream(path);
+            TimeUnit.MILLISECONDS.sleep(80);
+
+            inputStream = new FileInputStream(orderingPath);
             sc = new Scanner(inputStream, "UTF-8");
 
             while (sc.hasNextLine()) {
@@ -116,7 +124,7 @@ public class ProfileServant extends ProfilerPOA {
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             if (inputStream != null) {
@@ -144,16 +152,15 @@ public class ProfileServant extends ProfilerPOA {
 
     @Override
     public FoodTypeCounter[] getTopThreeFoodTypesByZone(String zone_id) {
-        String orders = "testfiles/test_ordering_profile.txt";
-        String zones = "train_in5020/restaurant_location_directory.txt";
 
         FileInputStream inputStream = null;
         Scanner sc = null;
         HashSet<String> restaurants = new HashSet<>();
         HashMap<String, Integer> foodTypeCountersMap = new HashMap<>();
-        // ArrayList<FoodTypeCounter> foodTypeCounters = new ArrayList<>();
         try {
-            inputStream = new FileInputStream(zones);
+            TimeUnit.MILLISECONDS.sleep(80);
+
+            inputStream = new FileInputStream(zonesPath);
             sc = new Scanner(inputStream, "UTF-8");
 
             while (sc.hasNextLine()) {
@@ -164,7 +171,7 @@ public class ProfileServant extends ProfilerPOA {
                 }
             }
 
-            inputStream = new FileInputStream(orders);
+            inputStream = new FileInputStream(orderingPath);
             sc = new Scanner(inputStream, "UTF-8");
 
             while (sc.hasNextLine()) {
@@ -180,7 +187,7 @@ public class ProfileServant extends ProfilerPOA {
 
             }
             if (sc.ioException() != null) throw sc.ioException();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             if (inputStream != null) {
@@ -200,6 +207,7 @@ public class ProfileServant extends ProfilerPOA {
 
         FoodTypeCounter[] foodTypeCounters = new FoodTypeCounter[3];
         for (int i = 0, j = 2; i < 3; i++, j--) {
+            //if (entryFoodTypeCountersList.size() - 1 < i) break;
             Map.Entry<String, Integer> obj = entryFoodTypeCountersList.get(i);
             foodTypeCounters[j] = new FoodTypeCounter(obj.getKey(), obj.getValue());
         }

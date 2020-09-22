@@ -3,15 +3,12 @@ package Client;
 import ProfileService.FoodTypeCounter;
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
-import ProfileService.UserCounter;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
-
-import java.util.concurrent.TimeUnit;
 
 public class ProfileClient {
     public static void main(String[] args) {
@@ -28,24 +25,12 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            String restaurant_id = "SOAAADD12AB018A9DD";
-            FoodTypeCounter[] userCounters = clientRef.getTopThreeFoodTypesByZone("11");
+            FileHandler fh = new FileHandler();
 
-            TimeUnit.MILLISECONDS.sleep(100);
-
-            for (FoodTypeCounter us : userCounters) {
-                System.out.println("Res: "+ restaurant_id + " foodtype: " + us.foodType_id + " Count: "
-                        + us.foodType_timesOrdered);
-
-            }
-
-
-            //InputParser inputParser = new InputParser();
-
-            //inputParser.readInput("testfiles/test_input.txt");
+            fh.runClientQueries("input.txt", clientRef);
 
         } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName
-                | NotFound | InterruptedException e) {
+                | NotFound e) {
             e.printStackTrace();
         }
     }
