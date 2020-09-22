@@ -67,7 +67,7 @@ public class FileHandler {
                     int orderCount = clientRef.getTimesOrdered(restaurant_id);
                     long lapsed = System.currentTimeMillis() - start;
                     results.add("Restaurant " + restaurant_id + " had " + orderCount + " orders. " + "(" +
-                            lapsed + " ms)");
+                            lapsed + " ms)\n");
                     break;
                 }
                 case "getTimesOrderedByUser": {
@@ -77,7 +77,7 @@ public class FileHandler {
                     int orderedByUserCount = clientRef.getTimesOrderedByUser(user_id, restaurant_id);
                     long lapsed = System.currentTimeMillis() - start;
                     results.add("Restaurant " + restaurant_id + " had " + orderedByUserCount + " from user " + user_id
-                            + ". (" + lapsed + " ms)");
+                            + ". (" + lapsed + " ms)\n");
                     break;
                 }
                 case "getTopThreeUsersByRestaurant": {
@@ -87,7 +87,7 @@ public class FileHandler {
                     long lapsed = System.currentTimeMillis() - start;
                     for (UserCounter us : topThreeUsers) {
                         results.add("User " + us.user_id + " ordered " + us.restaurant_timesOrdered + " times. (" +
-                                lapsed + " ms)");
+                                lapsed + " ms)\n");
                     }
                     break;
                 }
@@ -98,7 +98,7 @@ public class FileHandler {
                     long lapsed = System.currentTimeMillis() - start;
                     for (FoodTypeCounter ft : topThreeFoodsByZone) {
                         results.add("Food type " + ft.foodType_id + " was ordered " + ft.foodType_timesOrdered +
-                                " times. (" + lapsed + " ms)");
+                                " times. (" + lapsed + " ms)\n");
                     }
                     break;
                 }
@@ -114,11 +114,10 @@ public class FileHandler {
         String path = "output_files/" + filename;
         try {
             FileWriter writer = new FileWriter(path);
-
             for(String r : results) {
                 writer.write(r);
-                writer.close();
             }
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

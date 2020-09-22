@@ -27,7 +27,7 @@ public class ProfileClient {
 
             FileHandler fh = new FileHandler();
 
-            fh.runClientQueries("input.txt", clientRef);
+            fh.runClientQueries("test_input.txt", clientRef);
 
         } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName
                 | NotFound e) {
