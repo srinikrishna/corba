@@ -15,7 +15,7 @@ public class ProfileServant extends ProfilerPOA {
     private int USER_ID_POS = 2;
     private int TIMES_ORDERED_POS = 3;
 
-    private int ZONE_POS = 2;
+    private int ZONE_POS = 1;
 
     @Override
     public int getTimesOrdered(String restaurant_id) {
@@ -97,7 +97,6 @@ public class ProfileServant extends ProfilerPOA {
 
         FileInputStream inputStream = null;
         Scanner sc = null;
-        ArrayList<UserCounter> userCounterArrayList = new ArrayList<>();
         Map<String, Integer> userCounterMap = new HashMap<>();
         try {
             inputStream = new FileInputStream(path);
@@ -112,18 +111,6 @@ public class ProfileServant extends ProfilerPOA {
                 if (userCounterMap.computeIfPresent(user_id, (k, v) -> v += timesOrdered) == null) {
                     userCounterMap.put(user_id, timesOrdered);
                 }
-                /*
-                boolean found = false;
-                for (UserCounter us: userCounterArrayList) {
-                    if (us.user_id.equals(user_id)) {
-                        us.restaurant_timesOrdered += Integer.parseInt(rows[TIMES_ORDERED_POS]);
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found) {
-                    userCounterArrayList.add(new UserCounter(user_id, Integer.parseInt(rows[TIMES_ORDERED_POS])));
-                }*/
             }
 
             if (sc.ioException() != null) {
@@ -144,11 +131,6 @@ public class ProfileServant extends ProfilerPOA {
             }
         }
 
-        /*
-        userCounterArrayList.sort(Comparator.comparingInt(o -> o.restaurant_timesOrdered));
-        return userCounterArrayList.subList((userCounterArrayList.size() - 3), userCounterArrayList.size()).
-                toArray(new UserCounter[0]); */
-
         List<Map.Entry<String, Integer>> entryUserCounterList = new ArrayList<>(userCounterMap.entrySet());
         entryUserCounterList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
@@ -163,12 +145,13 @@ public class ProfileServant extends ProfilerPOA {
     @Override
     public FoodTypeCounter[] getTopThreeFoodTypesByZone(String zone_id) {
         String orders = "testfiles/test_ordering_profile.txt";
-        String zones = "train_in5020/restaurat_location_directory.txt";
+        String zones = "train_in5020/restaurant_location_directory.txt";
 
         FileInputStream inputStream = null;
         Scanner sc = null;
-        ArrayList<String> restaurants = new ArrayList<>();
-        ArrayList<FoodTypeCounter> foodTypeCounters = new ArrayList<>();
+        HashSet<String> restaurants = new HashSet<>();
+        HashMap<String, Integer> foodTypeCountersMap = new HashMap<>();
+        // ArrayList<FoodTypeCounter> foodTypeCounters = new ArrayList<>();
         try {
             inputStream = new FileInputStream(zones);
             sc = new Scanner(inputStream, "UTF-8");
@@ -176,7 +159,7 @@ public class ProfileServant extends ProfilerPOA {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] rows = line.split("( |\t)+");
-                if (rows[ZONE_POS].equals(zone_id)) {
+                if (zone_id.equals(rows[ZONE_POS])) {
                     restaurants.add(rows[RESTAURANT_ID_POS]);
                 }
             }
@@ -189,33 +172,12 @@ public class ProfileServant extends ProfilerPOA {
                 String[] rows = line.split("( |\t)+");
 
                 if (!restaurants.contains(rows[RESTAURANT_ID_POS])) continue;
-/*
-                boolean found = false;
-                for (FoodTypeCounter ftc: foodTypeCounters) {
-                    if (foodTypeCounters.equals(user_id)) {
-                        us.restaurant_timesOrdered += Integer.parseInt(rows[TIMES_ORDERED_POS]);
-                        found = true;
-                        break;
-                    }
+                int timesOrdered = Integer.parseInt(rows[TIMES_ORDERED_POS]);
+                String foodType_id = rows[FOOD_TYPE_ID_POS];
+                if (foodTypeCountersMap.computeIfPresent(foodType_id, (k, v) -> v += timesOrdered) == null) {
+                    foodTypeCountersMap.put(foodType_id, timesOrdered);
                 }
-                if(!found) {
-                    userCounterArrayList.add(new UserCounter(user_id, Integer.parseInt(rows[TIMES_ORDERED_POS])));
-                }
-                foodTypeCounters.add(new FoodTypeCounter(rows[FOOD_TYPE_ID_POS], Integer.parseInt(rows[TIMES_ORDERED_POS])))
-            }*/
-                /*
-                boolean found = false;
 
-                for (FoodTypeCounter ftc: foodTypeCounters) {
-                    if (ftc.foodType_id.equals(foodTypeId)) {
-                        ftc.foodType_timesOrdered += Integer.parseInt(rows[TIMES_ORDERED_POS]);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    foodTypeCounters.add(new FoodTypeCounter(foodTypeId, Integer.parseInt(rows[TIMES_ORDERED_POS])));
-                }
-*/
             }
             if (sc.ioException() != null) throw sc.ioException();
         } catch (IOException e) {
@@ -232,10 +194,16 @@ public class ProfileServant extends ProfilerPOA {
                 sc.close();
             }
         }
-        foodTypeCounters.sort(Comparator.comparingInt(f -> f.foodType_timesOrdered));
 
-        return foodTypeCounters.subList((foodTypeCounters.size() - 3), foodTypeCounters.size()).
-                toArray(new FoodTypeCounter[0]);
+        List<Map.Entry<String, Integer>> entryFoodTypeCountersList = new ArrayList<>(foodTypeCountersMap.entrySet());
+        entryFoodTypeCountersList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        FoodTypeCounter[] foodTypeCounters = new FoodTypeCounter[3];
+        for (int i = 0, j = 2; i < 3; i++, j--) {
+            Map.Entry<String, Integer> obj = entryFoodTypeCountersList.get(i);
+            foodTypeCounters[j] = new FoodTypeCounter(obj.getKey(), obj.getValue());
+        }
+        return foodTypeCounters;
     }
 
     @Override

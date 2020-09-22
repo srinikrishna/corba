@@ -1,5 +1,6 @@
 package Client;
 
+import ProfileService.FoodTypeCounter;
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
 import ProfileService.UserCounter;
@@ -28,13 +29,13 @@ public class ProfileClient {
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
             String restaurant_id = "SOAAADD12AB018A9DD";
-            UserCounter[] userCounters = clientRef.getTopThreeUsersByRestaurant(restaurant_id);
+            FoodTypeCounter[] userCounters = clientRef.getTopThreeFoodTypesByZone("11");
 
             TimeUnit.MILLISECONDS.sleep(100);
 
-            for (UserCounter us : userCounters) {
-                System.out.println("Res: "+ restaurant_id + " User id: " + us.user_id + " Count: "
-                        + us.restaurant_timesOrdered);
+            for (FoodTypeCounter us : userCounters) {
+                System.out.println("Res: "+ restaurant_id + " foodtype: " + us.foodType_id + " Count: "
+                        + us.foodType_timesOrdered);
 
             }
 
