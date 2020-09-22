@@ -42,6 +42,7 @@ public class ProfileServant extends ProfilerPOA {
             // Init popular users section
             //while (sc.hasNextLine() )
             int minUserOrders = 0;
+            String minUserOrders_id = null;
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] rows = line.split("( |\t)+");
@@ -76,17 +77,24 @@ public class ProfileServant extends ProfilerPOA {
                     RestaurantCounter rc = new RestaurantCounter(restaurant_id, timesOrdered);
                     UserProfile user = new UserProfile(user_id, new RestaurantCounter[]{rc});
                     popularUsers.put(user_id, new UserProfile(user_id, new RestaurantCounter[]{rc}));
-                } else if (timesOrdered > minUserOrders) {
+                } else if (timesOrdered > minUserOrders ) {
                     // some code to change the lowest user
+
                 }
 
-                for (UserProfile user : popularUsers.values()) {
-                    int currentUserTimesOrdered = 0;
-                    for (RestaurantCounter rc : user.restaurants) {
-                        currentUserTimesOrdered += rc.restaurant_timesOrdered;
-                    }
+                if (!popularUsers.isEmpty()) {
+                    for (UserProfile user : popularUsers.values()) {
+                        int currentUserTimesOrdered = 0;
+                        String id_currentMinOrderUser = null;
+                        for (RestaurantCounter rc : user.restaurants) {
+                            currentUserTimesOrdered += rc.restaurant_timesOrdered;
+                        }
+                        if (currentUserTimesOrdered < minUserOrders) {
+                            minUserOrders = currentUserTimesOrdered;
+                            id_currentMinOrderUser = user.user_id;
+                        }
+                }
 
-                    if (currentUserTimesOrdered < minUserOrders) minUserOrders = currentUserTimesOrdered;
                 }
             }
 
