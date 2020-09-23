@@ -14,12 +14,23 @@ public class FileHandlerCache implements IFileHandler {
     private final Map<String, RestaurantProfile> _restaurantCache = new HashMap<>();
     private final Map<String, UserProfile> _userCache = new HashMap<>();
 
-    public FileHandlerCache() {
+    ArrayList<String> results;
+    ArrayList<String> topUsers;
+    ArrayList<String> topFoods;
+    boolean naive;
+    boolean caching;
+
+    public FileHandlerCache(boolean naive, boolean caching) {
+        this.results = new ArrayList<>();
+        this.topUsers = new ArrayList<>();
+        this.topFoods = new ArrayList<>();
+        this.naive = naive;
+        this.caching = caching;
     } //ctor
 
     public int runClientQueries(String inputs, Profiler clientRef) {
-        ArrayList<String> results = issueCommandsToServer(readInput(inputs), clientRef);
-        writeResultsToFile(results);
+        issueCommandsToServer(readInput(inputs), clientRef);
+        writeResultsToFile();
         return 0;
     }
 
@@ -55,46 +66,48 @@ public class FileHandlerCache implements IFileHandler {
         return commands;
     }
 
-    private ArrayList<String> issueCommandsToServer(ArrayList<String[]> commands, Profiler clientRef)
+    private void issueCommandsToServer(ArrayList<String[]> commands, Profiler clientRef)
     {
         ArrayList<String> combinedResults = new ArrayList<>();
         for (String[] strArray: commands) {
-
             System.out.println(Arrays.toString(strArray));
 
-            String[] results = new String[0];
+            String[] temp = new String[0];
 
             long start = System.currentTimeMillis();
 
             switch (strArray[0]) {
                 case "getTimesOrdered": {
-                    results = getTimesOrdered(strArray[1], clientRef);
+                    temp = getTimesOrdered(strArray[1], clientRef);
+                    long lapsed = System.currentTimeMillis() - start;
+                    results.add(temp[0] + "(" + lapsed + " ms)\n");
                     break;
                 }
                 case "getTimesOrderedByUser": {
-                    results = getTimesOrderedByUser(strArray[1], strArray[2], clientRef);
+                    temp = getTimesOrderedByUser(strArray[1], strArray[2], clientRef);
+                    long lapsed = System.currentTimeMillis() - start;
+                    results.add(temp[0] + "(" + lapsed + " ms)\n");
                     break;
                 }
                 case "getTopThreeUsersByRestaurant": {
-                    results = getTopThreeUsersByRestaurant(strArray[1], clientRef);
+                    temp = getTopThreeUsersByRestaurant(strArray[1], clientRef);
+                    long lapsed = System.currentTimeMillis() - start;
+                    for (String str: temp)
+                        topUsers.add(str + "(" + lapsed + " ms)\n");
                     break;
                 }
                 case "getTopThreeFoodTypesByZone": {
-                    results = getTopThreeFoodTypesByZone(strArray[1], clientRef);
+                    temp = getTopThreeFoodTypesByZone(strArray[1], clientRef);
+                    long lapsed = System.currentTimeMillis() - start;
+                    for (String str: temp)
+                        topFoods.add(str + "(" + lapsed + " ms)\n");
                     break;
                 }
                 default: {
                     break;
                 }
             }
-
-            long lapsed = System.currentTimeMillis() - start;
-
-            for (String str: results)
-                combinedResults.add(str + "(" + lapsed + " ms)\n");
         }
-
-        return combinedResults;
     }
 
     private String[] getTimesOrdered(String restaurant_id, Profiler clientRef)
@@ -194,14 +207,32 @@ public class FileHandlerCache implements IFileHandler {
         return food_str;
     }
 
-    private int writeResultsToFile(ArrayList<String> results) {
-        String filename = "naive.txt";
+    private int writeResultsToFile() {
+        String filename;
+        if (naive) {
+            filename = "naive.txt";
+        } else if (caching) {
+            filename = "clientside_caching_on.txt";
+        } else {
+            filename = "clientside_caching_off.txt";
+        }
+
         String path = "output_files/" + filename;
         try {
             FileWriter writer = new FileWriter(path);
-            for(String r : results) {
-                writer.write(r);
+            for (String r : results) writer.write(r);
+
+            if (caching) {
+                String topUsersPath = "output_files/topuser.txt";
+                String topFoodsPath = "output_files/topfoods.txt";
+
+                writer = new FileWriter(topUsersPath);
+                for (String user : topUsers) writer.write(user);
+
+                writer = new FileWriter(topFoodsPath);
+                for (String food : topFoods) writer.write(food);
             }
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
