@@ -3,7 +3,6 @@ package Server;
 import ProfileService.*;
 import java.util.*;
 
-
 public class ProfileServant extends ProfilerPOA {
     private Map<Integer, ArrayList<String>> zoneCache;
     private Map<String, RestaurantProfile> restaurantCache;
@@ -25,6 +24,7 @@ public class ProfileServant extends ProfilerPOA {
 
     private void addLatency() {
         try {
+
             Thread.sleep(80);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -83,18 +83,25 @@ public class ProfileServant extends ProfilerPOA {
     }
 
     @Override
-    public UserProfile getUserProfile(String user_id) {
-        addLatency();
-        if (userCache != null && userCache.containsKey(user_id))
-            return userCache.get(user_id);
-        return null;
+    public UserProfile getUserProfile(String user_id)
+    {
+        UserProfile user = userCache.get(user_id);
+
+        if (user == null)
+            user = new UserProfile(user_id, new RestaurantCounter[0]);
+
+        return user;
     }
 
     @Override
-    public RestaurantProfile getRestaurantProfile(String restaurant_id) {
-        addLatency();
-        if (restaurantCache != null && restaurantCache.containsKey(restaurant_id))
-            return restaurantCache.get(restaurant_id);
-        return null;
+    public RestaurantProfile getRestaurantProfile(String restaurant_id)
+    {
+        RestaurantProfile restaurant = restaurantCache.get(restaurant_id);
+
+        if (restaurant == null)
+            restaurant = new RestaurantProfile(restaurant_id, 0,
+                    new UserCounter[0], new FoodTypeCounter[0]);
+
+        return restaurant;
     }
 }

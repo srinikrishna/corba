@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class FileHandler {
+public class FileHandler implements IFileHandler {
 
     ArrayList<String> results;
     ArrayList<String> topUsers;
@@ -108,7 +108,7 @@ public class FileHandler {
                     long lapsed = System.currentTimeMillis() - start;
                     if (caching) {
                         for (FoodTypeCounter ft : topThreeFoodsByZone) {
-                            topUsers.add("Food type " + ft.foodType_id + " was ordered " + ft.foodType_timesOrdered +
+                            topFoods.add("Food type " + ft.foodType_id + " was ordered " + ft.foodType_timesOrdered +
                                     " times. (" + lapsed + " ms)\n");
                         }
                     }

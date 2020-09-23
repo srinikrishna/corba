@@ -30,6 +30,10 @@ public class ProfileServer {
     public static String orderingPath = "train_in5020/restaurant_ordering_profile.txt";
     public static String zonePath = "train_in5020/restaurant_location_directory.txt";
 
+//    public static String orderingPath = "testfiles/test_ordering_profile.txt";
+//    public static String zonePath = "testfiles/test_location_directory.txt";
+
+
     private static boolean checkInput(String[] args) {
         if (args.length < 4) {
             System.out.println("Please provide necessary arguments to run the server. \n" +
@@ -46,7 +50,7 @@ public class ProfileServer {
 
     private static boolean getCachingOption(String[] args) {
         if ("-Caching".equals(args[2])) {
-            return "On".equals(args[3]);
+            return "True".equals(args[3]);
         }
         return false;
     }

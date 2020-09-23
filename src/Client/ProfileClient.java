@@ -1,6 +1,5 @@
 package Client;
 
-import ProfileService.FoodTypeCounter;
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
 import org.omg.CORBA.ORB;
@@ -61,9 +60,13 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            FileHandler fh = new FileHandler(naive, caching);
+            IFileHandler fh = null;
+            if (caching)
+                fh = new FileHandlerCache(naive, caching);
+            else if (naive)
+                fh = new FileHandler(naive, caching);
 
-            fh.runClientQueries("test_input.txt", clientRef);
+            fh.runClientQueries("input.txt", clientRef);
 
         } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName
                 | NotFound e) {
