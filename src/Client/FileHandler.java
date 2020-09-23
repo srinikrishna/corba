@@ -11,14 +11,23 @@ import java.util.*;
 
 public class FileHandler {
 
-    ArrayList<String[]> commands;
+    ArrayList<String> results;
+    ArrayList<String> topUsers;
+    ArrayList<String> topFoods;
+    boolean naive;
+    boolean caching;
 
-    public FileHandler() {
+    public FileHandler(boolean naive, boolean caching) {
+        this.results = new ArrayList<>();
+        this.topUsers = new ArrayList<>();
+        this.topFoods = new ArrayList<>();
+        this.naive = naive;
+        this.caching = caching;
     } //ctor
 
     public int runClientQueries(String inputs, Profiler clientRef) {
-        ArrayList<String> results = issueCommandsToServer(readInput(inputs), clientRef);
-        writeResultsToFile(results);
+        issueCommandsToServer(readInput(inputs), clientRef);
+        writeResultsToFile();
         return 0;
     }
 
@@ -54,9 +63,8 @@ public class FileHandler {
         return commands;
     }
 
-    private ArrayList<String> issueCommandsToServer(ArrayList<String[]> commands, Profiler clientRef) {
+    private void issueCommandsToServer(ArrayList<String[]> commands, Profiler clientRef) {
 
-        ArrayList<String> results = new ArrayList<>();
         for (String[] strArray: commands) {
             System.out.println(Arrays.toString(strArray));
 
@@ -85,9 +93,11 @@ public class FileHandler {
                     long start = System.currentTimeMillis();
                     UserCounter[] topThreeUsers = clientRef.getTopThreeUsersByRestaurant(restaurant_id);
                     long lapsed = System.currentTimeMillis() - start;
-                    for (UserCounter us : topThreeUsers) {
-                        results.add("User " + us.user_id + " ordered " + us.restaurant_timesOrdered + " times. (" +
-                                lapsed + " ms)\n");
+                    if (caching) {
+                        for (UserCounter us : topThreeUsers) {
+                            topUsers.add("User " + us.user_id + " ordered " + us.restaurant_timesOrdered + " times. (" +
+                                    lapsed + " ms)\n");
+                        }
                     }
                     break;
                 }
@@ -96,9 +106,11 @@ public class FileHandler {
                     long start = System.currentTimeMillis();
                     FoodTypeCounter[] topThreeFoodsByZone = clientRef.getTopThreeFoodTypesByZone(zone);
                     long lapsed = System.currentTimeMillis() - start;
-                    for (FoodTypeCounter ft : topThreeFoodsByZone) {
-                        results.add("Food type " + ft.foodType_id + " was ordered " + ft.foodType_timesOrdered +
-                                " times. (" + lapsed + " ms)\n");
+                    if (caching) {
+                        for (FoodTypeCounter ft : topThreeFoodsByZone) {
+                            topUsers.add("Food type " + ft.foodType_id + " was ordered " + ft.foodType_timesOrdered +
+                                    " times. (" + lapsed + " ms)\n");
+                        }
                     }
                     break;
                 }
@@ -106,22 +118,38 @@ public class FileHandler {
                     break;
             }
         }
-        return results;
     }
 
-    private int writeResultsToFile(ArrayList<String> results) {
-        String filename = "naive.txt";
+    private int writeResultsToFile() {
+        String filename;
+        if (naive) {
+            filename = "naive.txt";
+        } else if (caching) {
+            filename = "clientside_caching_on.txt";
+        } else {
+            filename = "clientside_caching_off.txt";
+        }
+
         String path = "output_files/" + filename;
         try {
             FileWriter writer = new FileWriter(path);
-            for(String r : results) {
-                writer.write(r);
+            for(String r : results) writer.write(r);
+
+            if (caching) {
+                String topUsersPath = "output_files/topuser.txt";
+                String topFoodsPath = "output_files/topfoods.txt";
+
+                writer = new FileWriter(topUsersPath);
+                for (String user : topUsers) writer.write(user);
+
+                writer = new FileWriter(topFoodsPath);
+                for (String food : topFoods) writer.write(food);
             }
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 }
