@@ -1,6 +1,5 @@
 package Client;
 
-import ProfileService.FoodTypeCounter;
 import ProfileService.Profiler;
 import ProfileService.ProfilerHelper;
 import org.omg.CORBA.ORB;
@@ -25,7 +24,7 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            FileHandler fh = new FileHandler();
+            FileHandlerCache fh = new FileHandlerCache();
 
             fh.runClientQueries("test_input.txt", clientRef);
 

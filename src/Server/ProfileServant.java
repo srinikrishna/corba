@@ -19,8 +19,12 @@ public class ProfileServant extends ProfilerPOA {
 
     private final int ZONE_POS = 1;
 
-    private final String orderingPath = "train_in5020/restaurant_ordering_profile.txt";
-    private final String zonesPath = "train_in5020/restaurant_location_directory.txt";
+//    private final String orderingPath = "train_in5020/restaurant_ordering_profile.txt";
+//    private final String zonesPath = "train_in5020/restaurant_location_directory.txt";
+
+    private final String orderingPath = "testfiles/test_ordering_profile.txt";
+    private final String zonesPath = "testfiles/test_location_directory.txt";
+
 
     private Map zoneToRestaurantProfilesMap = null;
 
@@ -264,8 +268,10 @@ public class ProfileServant extends ProfilerPOA {
                 throw sc.ioException();
             }
         } catch (IOException e) {
+            System.out.println("Init failed.");
             e.printStackTrace();
         } finally {
+            System.out.println("Init final.");
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -523,12 +529,20 @@ public class ProfileServant extends ProfilerPOA {
     }
 
     @Override
-    public UserProfile getUserProfile(String user_id) {
-        return null;
+    public UserProfile getUserProfile(String user_id)
+    {
+        UserProfile user = userCache.get(user_id);
+
+        //if
+
+        return user;
     }
 
     @Override
-    public RestaurantProfile getRestaurantProfile(String restaurant_id) {
-        return null;
+    public RestaurantProfile getRestaurantProfile(String restaurant_id)
+    {
+        RestaurantProfile profile = restaurantCache.get(restaurant_id);
+
+        return profile;
     }
 }
