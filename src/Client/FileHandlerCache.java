@@ -219,21 +219,24 @@ public class FileHandlerCache implements IFileHandler {
 
         String path = "output_files/" + filename;
         try {
-            FileWriter writer = new FileWriter(path);
-            for (String r : results) writer.write(r);
+            FileWriter writer1 = new FileWriter(path);
+            for (String r : results) writer1.write(r);
 
             if (caching) {
                 String topUsersPath = "output_files/topuser.txt";
                 String topFoodsPath = "output_files/topfoods.txt";
 
-                writer = new FileWriter(topUsersPath);
-                for (String user : topUsers) writer.write(user);
+                FileWriter writer2 = new FileWriter(topUsersPath);
+                for (String user : topUsers) writer2.write(user);
 
-                writer = new FileWriter(topFoodsPath);
-                for (String food : topFoods) writer.write(food);
+                FileWriter writer3 = new FileWriter(topFoodsPath);
+                for (String food : topFoods) writer3.write(food);
+                writer2.close();
+                writer3.close();
             }
 
-            writer.close();
+            writer1.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

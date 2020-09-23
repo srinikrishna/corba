@@ -49,7 +49,7 @@ public class ServerCache {
                 }
                 long end = System.currentTimeMillis();
                 long lapsed1 = end - start;
-                System.out.println(lapsed1);
+                System.out.println("First read through the restaurant_ordering_profile.txt took " + lapsed1 + " ms");
                 sortedRestaurants = findGreatest(popRestaurants, 1000).stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 sortedUsers = findGreatest(popUsers, 1000).stream()
