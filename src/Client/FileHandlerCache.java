@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class FileHandlerCache {
+public class FileHandlerCache implements IFileHandler {
 
     ArrayList<String[]> commands;
 
@@ -101,37 +101,58 @@ public class FileHandlerCache {
     {
         RestaurantProfile restaurant = _restaurantCache.get(restaurant_id);
 
-        if (restaurant == null) {
+        // client cache miss
+        if (restaurant == null)
             restaurant = clientRef.getRestaurantProfile(restaurant_id);
+
+        // server cache miss
+        if (restaurant == null) {
+            int timesOrdered = clientRef.getTimesOrdered(restaurant_id);
+            restaurant = new RestaurantProfile(restaurant_id, timesOrdered, null, null);
             _restaurantCache.put(restaurant_id, restaurant);
         }
-
-        if (restaurant.total_times_ordered == 0)
-            restaurant.total_times_ordered = clientRef.getTimesOrdered(restaurant_id);
 
         return new String[] {"Restaurant " + restaurant_id + " had " + restaurant.total_times_ordered + " orders."};
     }
 
     private String[] getTimesOrderedByUser(String user_id, String restaurant_id, Profiler clientRef)
     {
+        RestaurantCounter counter = null;
         UserProfile user = _userCache.get(user_id);
 
-        if (user == null) {
+        // client cache miss
+        if (user == null)
             user = clientRef.getUserProfile(user_id);
+
+        // server cache miss
+        if (user.restaurants.length == 0) {
+            int timesOrdered = clientRef.getTimesOrderedByUser(user_id, restaurant_id);
+            counter = new RestaurantCounter(restaurant_id, timesOrdered);
+            user = new UserProfile(user_id, new RestaurantCounter[]{ counter });
             _userCache.put(user_id, user);
-        }
+        } else {
+            for (RestaurantCounter rc: user.restaurants) {
+                if (restaurant_id.compareTo(rc.restaurant_id) == 0) {
+                    counter = rc;
+                    break;
+                }
+            }
 
-        RestaurantCounter counter = null;
+            // restaurant not found in user profile - append it to the list
+            if (counter == null) {
+                int timesOrderedByUser = clientRef.getTimesOrderedByUser(user_id, restaurant_id);
+                counter = new RestaurantCounter(restaurant_id, timesOrderedByUser);
+                RestaurantCounter[] counterArray = new RestaurantCounter[user.restaurants.length + 1];
 
-        for (RestaurantCounter rc: user.restaurants) {
-            if (restaurant_id.compareTo(rc.restaurant_id) == 0) {
-                counter = rc;
-                break;
+                int i;
+                for (i = 0; i < user.restaurants.length; i++) {
+                    counterArray[i] = user.restaurants[i];
+                }
+                counterArray[i] = counter;
+
+                user.restaurants = counterArray;
             }
         }
-
-        if (counter.restaurant_timesOrdered == 0)
-            counter.restaurant_timesOrdered = clientRef.getTimesOrderedByUser(user_id, restaurant_id);
 
         return new String[] {"Restaurant " + restaurant_id + " had " + counter.restaurant_timesOrdered + " from user "
                 + user_id + "."};

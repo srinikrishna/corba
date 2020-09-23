@@ -24,7 +24,11 @@ public class ProfileClient {
             String name = "Profiler";
             Profiler clientRef = ProfilerHelper.narrow(ncRef.resolve_str(name));
 
-            FileHandlerCache fh = new FileHandlerCache();
+            IFileHandler fh = null;
+            if (args.length == 3 && args[2].compareTo("-c") == 0)
+                fh = new FileHandlerCache();
+            else
+                fh = new FileHandler();
 
             fh.runClientQueries("test_input.txt", clientRef);
 

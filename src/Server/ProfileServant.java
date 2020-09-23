@@ -533,7 +533,8 @@ public class ProfileServant extends ProfilerPOA {
     {
         UserProfile user = userCache.get(user_id);
 
-        //if
+        if (user == null)
+            user = new UserProfile(user_id, new RestaurantCounter[0]);
 
         return user;
     }
@@ -541,8 +542,11 @@ public class ProfileServant extends ProfilerPOA {
     @Override
     public RestaurantProfile getRestaurantProfile(String restaurant_id)
     {
-        RestaurantProfile profile = restaurantCache.get(restaurant_id);
+        RestaurantProfile restaurant = restaurantCache.get(restaurant_id);
 
-        return profile;
+        if (restaurant == null)
+            restaurant = new RestaurantProfile(restaurant_id, 0, new UserCounter[0], new FoodTypeCounter[0]);
+
+        return restaurant;
     }
 }
